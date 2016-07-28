@@ -11,11 +11,26 @@ import (
 	"strings"
 )
 
+// FromRequestWithBody generates a curl command that can be used when debugging issues
+// encountered while executing requests. External body string is set to avoid problems
+// with Body read
+func FromRequestWithBody(r *http.Request, body string) string {
+	ret := fmt.Sprintf("curl -v -X %s %s %s %s '%s' --data-binary '%s'",
+		r.Method,
+		getHeaders(r.Header, r.Host),
+		ifSet(r.UserAgent(), fmt.Sprintf("--user-agent '%s'", r.UserAgent())),
+		ifSet(r.Referer(), fmt.Sprintf("--referrer '%s'", r.Referer())),
+		r.URL.String(),
+		body)
+
+	return ret
+}
+
 // FromRequest generates a curl command that can be used when debugging issues
 // encountered while executing requests. Be sure to capture your curl before
 // you execute the request if you want to capture the post body.
 func FromRequest(r *http.Request) string {
-	ret := fmt.Sprintf("curl -v -X %s %s %s %s %s %s",
+	ret := fmt.Sprintf("curl -v -X %s %s %s %s '%s' %s",
 		r.Method,
 		getHeaders(r.Header, r.Host),
 		ifSet(r.UserAgent(), fmt.Sprintf("--user-agent '%s'", r.UserAgent())),
@@ -24,6 +39,20 @@ func FromRequest(r *http.Request) string {
 		getRequestBody(r.Body))
 
 	return ret
+}
+
+// CopyBody is a safe copy of request body without cleaning content
+func CopyBody(req *http.Request) string {
+	// Read the content
+	var bodyBytes []byte
+	if req.Body != nil {
+		bodyBytes, _ = ioutil.ReadAll(req.Body)
+	}
+	// Restore the io.ReadCloser to its original state
+	req.Body = ioutil.NopCloser(bytes.NewBuffer(bodyBytes))
+
+	// Use the content
+	return string(bodyBytes)
 }
 
 // FromParams is less useful than FromRequest because the structure of the
