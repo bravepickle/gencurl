@@ -33,7 +33,7 @@ func FromRequest(r *http.Request) string {
 // the bodyType parameter. If you used http.PostForm(), your content-type is set
 // to "application/x-www-form-urlencoded".
 func FromParams(method string, urlStr string, requestBody string, headers http.Header) string {
-	ret := fmt.Sprintf("curl -v -X %s %s %s %s",
+	ret := fmt.Sprintf("curl -v -X %s %s %s '%s'",
 		method,
 		getHeaders(headers, extractHost(urlStr)),
 		urlStr,
