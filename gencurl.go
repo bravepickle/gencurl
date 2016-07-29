@@ -15,7 +15,11 @@ import (
 // encountered while executing requests. External body string is set to avoid problems
 // with Body read
 func FromRequestWithBody(r *http.Request, body string) string {
-	ret := fmt.Sprintf("curl -v -X %s %s %s %s '%s' --data-binary '%s'",
+	if body != `` {
+		body = fmt.Sprintf(` --data-binary '%s'`, body)
+	}
+
+	ret := fmt.Sprintf("curl -v -X %s %s %s %s '%s'%s",
 		r.Method,
 		getHeaders(r.Header, r.Host),
 		ifSet(r.UserAgent(), fmt.Sprintf("--user-agent '%s'", r.UserAgent())),
