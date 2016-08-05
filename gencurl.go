@@ -19,7 +19,7 @@ func FromRequestWithBody(r *http.Request, body string) string {
 		body = fmt.Sprintf(` --data-binary '%s'`, body)
 	}
 
-	ret := fmt.Sprintf("curl -v -X %s %s %s %s '%s'%s",
+	ret := fmt.Sprintf("curl -i -X %s %s %s %s '%s'%s",
 		r.Method,
 		getHeaders(r.Header, r.Host),
 		ifSet(r.UserAgent(), fmt.Sprintf("--user-agent '%s'", r.UserAgent())),
