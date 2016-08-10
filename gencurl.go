@@ -122,13 +122,13 @@ func getHeaders(h http.Header, Host string) string {
 	for header, values := range h {
 		for _, value := range values {
 			if strings.ToLower(header) != "host" {
-				ret += fmt.Sprintf(" --header '%s: %v'", header, value)
+				ret += fmt.Sprintf(" -H '%s: %v'", header, value)
 			}
 		}
 	}
 	// the request object does not allow overriding of the host header. one must say req.Host = "foo.bar"
 	if Host != "" {
-		ret += fmt.Sprintf(" --header '%s: %v'", "host", Host)
+		ret += fmt.Sprintf(" -H '%s: %v'", "host", Host)
 	}
 
 	return ret
