@@ -19,12 +19,12 @@ func FromRequestWithBody(r *http.Request, body string) string {
 		body = fmt.Sprintf(` --data-binary '%s'`, body)
 	}
 
-	ret := fmt.Sprintf("curl -i -X %s %s %s %s '%s'%s",
+	ret := fmt.Sprintf("curl -i '%s' -X %s %s %s %s%s",
+		r.URL.String(),
 		r.Method,
 		getHeaders(r.Header, r.Host),
 		ifSet(r.UserAgent(), fmt.Sprintf("--user-agent '%s'", r.UserAgent())),
 		ifSet(r.Referer(), fmt.Sprintf("--referrer '%s'", r.Referer())),
-		r.URL.String(),
 		body)
 
 	return ret
